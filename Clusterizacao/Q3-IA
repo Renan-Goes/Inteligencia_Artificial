@@ -1,0 +1,82 @@
+import numpy as np
+import pandas as pd
+from sklearn.metrics import mean_absolute_error, classification_report, confusion_matrix, accuracy_score, f1_score
+from sklearn.model_selection import train_test_split
+from matplotlib import pyplot as plt
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import KMeans
+from sklearn.neighbors import KNeighborsClassifier
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import seaborn as sns
+from sklearn import preprocessing
+import scipy.cluster.hierarchy as sch
+
+file = 'epl_1819.csv'
+data = pd.read_csv(file)
+
+data['defence_clearances'] = data['defence_clearances'].str.replace(',','.').astype(float)
+data['attack_passes'] = data['attack_passes'].str.replace(',','.').astype(float)
+data['attack_passes_long'] = data['attack_passes_long'].str.replace(',','.').astype(float)
+data['attack_passes_back'] = data['attack_passes_back'].str.replace(',','.').astype(float)
+
+features = ['general_won', 'general_draw', 'general_lost',
+            'attack_scored', 'defence_goals_conceeded', 'general_goal_difference',
+            'general_points', 'attack_passes', 'attack_passes_through',
+            'attack_passes_long', 'attack_passes_back', 'attack_crosses',
+            'attack_corners_taken', 'attack_shots', 'attack_shots_on_target',
+            'attack_goals_headed', 'attack_goals_penalty', 'attack_goals_box',
+            'attack_goals_outsidebox', 'general_card_yellow', 'general_card_red',
+            'attack_goals_counter', 'attack_goals_freekick', 'defence_saves',
+            'defence_blocks', 'defence_interceptions', 'defence_tackles',
+            'defence_tackles_last_man', 'defence_clearances',
+            'defence_clearances_headed', 'defence_penalty_conceeded',
+            'attack_posession', 'attack_pass_accuracy']
+
+
+num = ['int64', 'float64']
+ndata = data[[c for c,v in data.dtypes.items() if v in num]]
+categorical = data[[c for c,v in data.dtypes.items() if v not in num]]
+
+for col in ndata.columns:
+    ndata.fillna(ndata[col].mean(), inplace=True, axis=1)
+
+X = np.array(data.drop(['Team', 'category'], axis=1))
+
+df = pd.DataFrame(X)
+
+kmeans = KMeans(n_clusters=5, random_state=0, max_iter=500).fit(X)
+labels = kmeans.predict(X)
+centroids = kmeans.cluster_centers_
+fig = plt.figure()
+ax = fig.add_subplot(111)
+scatter = ax.scatter(data['general_league_position'], data['category'], edgecolor='blue', c=df[0],s=80)
+ax.set_title('Clustering in K-Means:')
+plt.colorbar(scatter)
+plt.show(scatter)
+
+nmodel = AgglomerativeClustering(n_clusters=5, linkage = 'complete')
+labels = nmodel.fit_predict(X)
+fig = plt.figure()
+ax = fig.add_subplot(111)
+scatter = ax.scatter(data['general_league_position'], data['category'], edgecolor='black', c=df[0],s=80)
+ax.set_title('Clustering in Agglomeration:')
+plt.colorbar(scatter)
+plt.show(scatter)
+
+for i in [2, 5, 10]:
+    for j in [[1, 'ward'], [10, 'complete'], [100, 'average'], [1000, 'single']]:
+        print("-=-"*50)
+        print("-=-"*50)
+        nkmeans = KMeans(n_clusters=i, random_state=0, max_iter=j[0]).fit(X)
+        labels = nkmeans.predict(X)
+        print("Labels with K = %d and " % i + "Max Iterations = %d in Kmeans: " % j[0])
+        print(labels)
+        print("---"*50)
+
+
+
+        nmodel = AgglomerativeClustering(n_clusters=i, linkage = j[1])
+        labels = nmodel.fit_predict(X)
+        print("Labels with k = %d and using " % i + j[1] + " in Agglomeration: ")
+        print(labels)
