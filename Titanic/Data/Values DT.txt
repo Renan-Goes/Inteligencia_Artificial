@@ -1,0 +1,6 @@
+Sensitivity Decision Tree: 0.727
+Specificity Decision Tree: 0.764
+Precision Decision Tree: 0.831
+Accuracy Decision Tree: 0.741
+F1-Score Decision Tree: 0.694
+Mean absolute error: 0.259

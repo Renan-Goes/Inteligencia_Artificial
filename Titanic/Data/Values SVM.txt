@@ -1,0 +1,13 @@
+Sensitivity Linear: 0.890
+Specificity Linear: 0.654
+Precision Linear: 0.818
+Accuracy Linear: 0.804
+F1-Score Linear: 0.708
+Mean absolute error Linear: 0.196
+\--------------------/
+Sensitivity RBF: 0.813
+Specificity RBF: 0.577
+Precision RBF: 0.771
+Accuracy RBF: 0.727
+F1-Score RBF: 0.606
+Mean absolute error RBF: 0.273
